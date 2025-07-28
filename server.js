@@ -2,29 +2,33 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
+import ideaRouter from "./routes/ideaRoutes.js";
+import { errorHandler } from "./middleware/errorHandler.js";
+import connectDB from "./config/db.js";
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 8000;
 
+// Connect to mongoDb
+connectDB();
+
 // Middleware
 app.use(cors());
-app.use(express.json());
+app.use(express.json()); // for raw json
 
-// Routes
-app.get("/", (req, res) => {
-	res.send("Welcome to the API 🚀");
+app.use(express.urlencoded({ extended: true })); // for form url encoded
+
+app.use("/api/ideas", ideaRouter);
+app.use((req, res, next) => {
+	const error = new Error(`not found - ${req.originalUrl}`);
+	res.status(404);
+	next(error);
 });
+app.use(errorHandler);
 
-app.get("/api/notes", (req, res) => {
-	res.json([
-		{ id: 1, title: "Learn Express", priority: "High" },
-		{ id: 2, title: "Build a REST API", priority: "Medium" },
-	]);
-});
-
-// Start server
+// Start server - tad@123
 app.listen(PORT, () => {
 	console.log(`🚀 Server running at http://localhost:${PORT}`);
 });
