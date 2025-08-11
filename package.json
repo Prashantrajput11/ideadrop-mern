@@ -3,7 +3,7 @@
 	"version": "1.0.0",
 	"main": "index.js",
 	"scripts": {
-		"start": "node server.js", 
+		"start": "node server.js",
 		"dev": "node --watch server.js"
 	},
 	"keywords": [],
@@ -12,9 +12,11 @@
 	"license": "ISC",
 	"description": "",
 	"dependencies": {
+		"bcryptjs": "^3.0.2",
 		"cors": "^2.8.5",
 		"dotenv": "^17.2.0",
 		"express": "^5.1.0",
+		"jose": "^6.0.12",
 		"mongoose": "^8.16.4"
 	}
 }
