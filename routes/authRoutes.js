@@ -41,7 +41,7 @@ router.post("/register", async (req, res, next) => {
 			const payload = { userId: user._id.toString() };
 
 			// Generate a short-lived access token and a long-lived refresh token
-			const accessToken = await generateToken(payload, "15m"); // e.g., 15 minutes
+			const accessToken = await generateToken(payload, "1m"); // e.g., 15 minutes
 			const refreshToken = await generateToken(payload, "30d"); // e.g., 30 days
 
 			// Set the refresh token in a secure, HttpOnly cookie
@@ -84,4 +84,61 @@ router.post("/logout", (req, res) => {
 	res.status(200).json({ message: "logged out succesfully" });
 });
 
+// @route       POST /api/auth/login
+// @description Authenticate user & get token
+// @access      Public
+router.post("/login", async (req, res, next) => {
+	try {
+		const { email, password } = req.body;
+
+		// Validate input
+		if (!email || !password) {
+			res.status(400);
+			throw new Error("Email and password are required");
+		}
+
+		// Check if user exists
+		const user = await User.findOne({ email });
+
+		// Important: Use a generic error message to prevent username enumeration attacks
+		if (!user) {
+			res.status(401); // Unauthorized
+			throw new Error("Invalid credentials");
+		}
+
+		// Check if password matches (assuming your User model has a matchPassword method)
+		const isMatch = await user.matchPassword(password);
+
+		if (!isMatch) {
+			res.status(401); // Unauthorized
+			throw new Error("Invalid credentials");
+		}
+
+		// If credentials are correct, create tokens
+		const payload = { userId: user._id.toString() };
+		const accessToken = await generateToken(payload, "1m");
+		const refreshToken = await generateToken(payload, "30d");
+
+		// Set the refresh token in the secure cookie
+		res.cookie("refreshToken", refreshToken, {
+			httpOnly: true,
+			secure: process.env.NODE_ENV === "production",
+			sameSite: "strict",
+			maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+		});
+
+		// Send the access token and user info back to the client
+		res.status(200).json({
+			message: "Login successful",
+			accessToken,
+			user: {
+				_id: user._id,
+				name: user.name,
+				email: user.email,
+			},
+		});
+	} catch (error) {
+		next(error);
+	}
+});
 export default router;

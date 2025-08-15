@@ -41,6 +41,11 @@ userSchema.pre("save", async function (next) {
 	next();
 });
 
+// Add the method to the schema
+userSchema.methods.matchPassword = async function (enteredPassword) {
+	// 'this.password' refers to the hashed password stored for this specific user
+	return await bcrypt.compare(enteredPassword, this.password);
+};
 const User = mongoose.model("User", userSchema); // force "ideas" collection
 
 export default User;

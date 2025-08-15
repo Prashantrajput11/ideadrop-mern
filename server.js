@@ -6,6 +6,7 @@ import ideaRouter from "./routes/ideaRoutes.js";
 import authRouter from "./routes/authRoutes.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 import connectDB from "./config/db.js";
+import { cookieParser } from "cookie-parser";
 
 dotenv.config();
 
@@ -20,6 +21,7 @@ app.use(cors());
 app.use(express.json()); // for raw json
 
 app.use(express.urlencoded({ extended: true })); // for form url encoded
+app.use(cookieParser());
 
 app.use("/api/ideas", ideaRouter);
 app.use("/api/auth", authRouter);
