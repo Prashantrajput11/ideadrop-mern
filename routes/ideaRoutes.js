@@ -63,7 +63,7 @@ router.get("/:id", async (req, res, next) => {
 // @access       Private
 router.post("/", async (req, res, next) => {
 	try {
-		const { title, summary, description, tags } = req.body;
+		const { title, summary, description, tags } = req.body || {};
 
 		if (!title?.trim() || !summary?.trim() || !description?.trim()) {
 			res.status(400);
@@ -126,7 +126,7 @@ router.delete("/:id", async (req, res, next) => {
 router.put("/:id", async (req, res, next) => {
 	try {
 		const { id } = req.params;
-		const { title, summary, description } = req.body; // ✅ extract from req.body
+		const { title, summary, description } = req.body || {}; // ✅ extract from req.body
 
 		// Check if id is valid
 		if (!mongoose.Types.ObjectId.isValid(id)) {

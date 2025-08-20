@@ -6,7 +6,7 @@ import ideaRouter from "./routes/ideaRoutes.js";
 import authRouter from "./routes/authRoutes.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 import connectDB from "./config/db.js";
-import { cookieParser } from "cookie-parser";
+import cookieParser from "cookie-parser";
 
 dotenv.config();
 
